@@ -1,0 +1,29 @@
+﻿<Window x:Class="PongOnline.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PongOnline"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10*"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Canvas x:Name="MyCanvas" Grid.Row="0" Focusable="True"
+                KeyDown="MyCanvas_KeyDown"
+                KeyUp="MyCanvas_KeyUp">
+            <Rectangle x:Name="rightRacket" Width="10" Height="60" Fill="Red" Visibility="Collapsed"
+                       />
+            <Rectangle x:Name="leftRacket" Width="10" Height="60" Fill="Blue" Visibility="Collapsed"
+                       />
+        </Canvas>
+        <Grid Grid.Row="1">
+            <Button x:Name="btnStart" Content="Start" 
+                    HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Padding="20,5,20,5"
+                    Click="btnStart_Click"/>
+        </Grid>
+    </Grid>
+</Window>

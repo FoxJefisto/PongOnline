@@ -1,0 +1,19 @@
+﻿<Window x:Class="PongOnline.Register"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PongOnline"
+        mc:Ignorable="d"
+        Title="Register" Height="300" Width="300">
+    <Grid>
+        <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Vertical" Width="250" Background="#FF1268BD">
+            <TextBlock Text="Имя" Margin="0,10,0,0" HorizontalAlignment="Center" Foreground="White"/>
+            <TextBox x:Name="tbUserName" Margin="60,0,60,0" AcceptsReturn="False"/>
+            <Button x:Name="btnLogIn" Margin="60, 10, 60, 0" HorizontalContentAlignment="Center"
+                    Content="Вход" IsDefault="True"
+                    Click="btnLogIn_Click"/>
+            <TextBlock Grid.Row="1" x:Name="tbAnswer" Margin="0, 10, 0, 0" HorizontalAlignment="Center" TextWrapping="Wrap" FontSize="10"/>
+        </StackPanel>
+    </Grid>
+</Window>
