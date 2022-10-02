@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Windows.Shapes;
 
 namespace PongOnline.Model
@@ -15,5 +16,7 @@ namespace PongOnline.Model
         public bool MoveRight { get; set; }
         public Rectangle thisRacket { get; set; }
         public Rectangle opponentRacket { get; set; }
+
+
     }
 }

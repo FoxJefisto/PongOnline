@@ -6,6 +6,9 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data;
+using System.Diagnostics;
+using System.Threading;
+using System.Windows;
 
 namespace PongOnline.Connect
 {
@@ -19,7 +22,7 @@ namespace PongOnline.Connect
         public TCPClient(string address, int port)
         {
             Address = address;
-            Port = port;   
+            Port = port;
         }
 
         public void Connect()
@@ -59,22 +62,50 @@ namespace PongOnline.Connect
             }
         }
 
-        public string Start()
+        public string Register()
         {
-            var message = $"{UserName}: start";
-            return SendMessage(message);
+            var command = "register";
+            return SendMessage(command);
         }
 
         public string Update(string CanvasTop, string CanvasLeft)
         {
-            var message = $"{UserName}: update {CanvasTop} {CanvasLeft}";
-            return SendMessage(message);
+            var command = $"update {CanvasTop} {CanvasLeft}";
+            return SendMessage(command);
         }
 
         public string Status()
         {
-            var message = $"{UserName}: status";
-            return SendMessage(message);
+            var command = "status";
+            return SendMessage(command);
+        }
+
+        public void Wait(CancellationToken token)
+        {
+            string status;
+            do
+            {
+                if (token.IsCancellationRequested)
+                {
+                    Debug.WriteLine("Операция поиска противника прервана");
+                    return;
+                }
+                Thread.Sleep(2000);
+                status = Status();
+                Debug.WriteLine(status);
+            } while (status != "True");
+        }
+
+        public string Cancel()
+        {
+            var command = "cancel";
+            return SendMessage(command);
+        }
+
+        public string StopGame()
+        {
+            var command = "stopgame";
+            return SendMessage(command);
         }
     }
 }
