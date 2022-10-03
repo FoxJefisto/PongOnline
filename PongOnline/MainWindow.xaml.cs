@@ -28,7 +28,8 @@ namespace PongOnline
     public partial class MainWindow : Window
     {
         DispatcherTimer gameTimer = new DispatcherTimer();
-        public Player player = new Player();
+        public Player player;
+        public Ball ball;
         public TCPClient tcp = new TCPClient("127.0.0.1", 8888);
         int racketSpeed = 15;
 
@@ -39,28 +40,32 @@ namespace PongOnline
 
         private void GameLoop(object? sender, EventArgs e)
         {
-            if (player.MoveUp && Canvas.GetTop(player.thisRacket) > 0)
+            if (player.MoveUp && Canvas.GetTop(player.thisRacket.element) > 0)
             {
-                Canvas.SetTop(player.thisRacket, Canvas.GetTop(player.thisRacket) - racketSpeed);
+                Canvas.SetTop(player.thisRacket.element, Canvas.GetTop(player.thisRacket.element) - racketSpeed);
             }
-            if (player.MoveDown && Canvas.GetTop(player.thisRacket) + player.thisRacket.Height < MyCanvas.ActualHeight)
+            if (player.MoveDown && Canvas.GetTop(player.thisRacket.element) + player.thisRacket.element.Height < MyCanvas.ActualHeight)
             {
-                Canvas.SetTop(player.thisRacket, Canvas.GetTop(player.thisRacket) + racketSpeed);
+                Canvas.SetTop(player.thisRacket.element, Canvas.GetTop(player.thisRacket.element) + racketSpeed);
             }
-            if (player.MoveLeft && Canvas.GetLeft(player.thisRacket) - player.thisRacket.Width > 0)
+            if (player.MoveLeft && Canvas.GetLeft(player.thisRacket.element) - player.thisRacket.element.Width > 0)
             {
-                Canvas.SetLeft(player.thisRacket, Canvas.GetLeft(player.thisRacket) - racketSpeed);
+                Canvas.SetLeft(player.thisRacket.element, Canvas.GetLeft(player.thisRacket.element) - racketSpeed);
             }
-            if (player.MoveRight && Canvas.GetLeft(player.thisRacket) + player.thisRacket.Width < MyCanvas.ActualWidth)
+            if (player.MoveRight && Canvas.GetLeft(player.thisRacket.element) + player.thisRacket.element.Width < MyCanvas.ActualWidth)
             {
-                Canvas.SetLeft(player.thisRacket, Canvas.GetLeft(player.thisRacket) + racketSpeed);
+                Canvas.SetLeft(player.thisRacket.element, Canvas.GetLeft(player.thisRacket.element) + racketSpeed);
             }
-            var response = tcp.Update(Canvas.GetTop(player.thisRacket).ToString(), Canvas.GetLeft(player.thisRacket).ToString());
-            var matchCoords = Regex.Match(response, @"([\d,.-]+) ([\d,.-]+)");
-            var top = Convert.ToInt32(matchCoords.Groups[1].Value);
-            var left = Convert.ToInt32(matchCoords.Groups[2].Value);
-            Canvas.SetTop(player.opponentRacket, top);
-            Canvas.SetLeft(player.opponentRacket, left);
+            var response = tcp.Update(Canvas.GetTop(player.thisRacket.element).ToString(), Canvas.GetLeft(player.thisRacket.element).ToString(),
+    Canvas.GetTop(ball.element).ToString(), Canvas.GetLeft(ball.element).ToString(), ball.dy.ToString(), ball.dx.ToString());
+            var coords = response.Split(' ');
+            Canvas.SetTop(player.opponentRacket.element, double.Parse(coords[0]));
+            Canvas.SetLeft(player.opponentRacket.element, double.Parse(coords[1]));
+            Canvas.SetTop(ball.element, double.Parse(coords[2]));
+            Canvas.SetLeft(ball.element, double.Parse(coords[3]));
+            ball.dy = int.Parse(coords[4]);
+            ball.dx = int.Parse(coords[5]);
+            ball.Move();
         }
 
         private void btnStart_Click(object sender, RoutedEventArgs e)
@@ -70,7 +75,15 @@ namespace PongOnline
             var answerDialog = registerWindow.ShowDialog();
             if (answerDialog.Value)
             {
-                tcp.Connect();
+                try
+                {
+                    tcp.Connect();
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                    return;
+                }
                 var playerId = tcp.Register();
                 Debug.WriteLine(playerId);
                 var cts = new CancellationTokenSource();
@@ -86,25 +99,32 @@ namespace PongOnline
                     return;
                 }
                 MyCanvas.Focus();
+                player = new Player();
+                var leftRacket = new Racket(elemLeftRacket);
+                var rightRacket = new Racket(elemRightRacket);
                 if (playerId == "1")
                 {
-                    Canvas.SetTop(leftRacket, Math.Round(MyCanvas.ActualHeight / 2));
-                    Canvas.SetLeft(leftRacket, 20);
+                    Canvas.SetTop(elemLeftRacket, (int)(MyCanvas.ActualHeight / 2));
+                    Canvas.SetLeft(elemLeftRacket, 20);
 
                     player.thisRacket = leftRacket;
                     player.opponentRacket = rightRacket;
                 }
                 else
                 {
-                    Canvas.SetLeft(rightRacket, Math.Round(MyCanvas.ActualWidth - 20));
-                    Canvas.SetTop(rightRacket, Math.Round(MyCanvas.ActualHeight / 2));
+                    Canvas.SetLeft(elemRightRacket, (int)(MyCanvas.ActualWidth - 20));
+                    Canvas.SetTop(elemRightRacket, (int)(MyCanvas.ActualHeight / 2));
                     player.thisRacket = rightRacket;
                     player.opponentRacket = leftRacket;
-
                 }
-                player.thisRacket.Visibility = Visibility.Visible;
-                player.opponentRacket.Visibility = Visibility.Visible;
-                var response = tcp.Update(Canvas.GetTop(player.thisRacket).ToString(), Canvas.GetLeft(player.thisRacket).ToString());
+                player.thisRacket.element.Visibility = Visibility.Visible;
+                player.opponentRacket.element.Visibility = Visibility.Visible;
+                elBall.Visibility = Visibility.Visible;
+                Canvas.SetLeft(elBall, (int)(MyCanvas.ActualWidth / 2));
+                Canvas.SetTop(elBall, (int)(MyCanvas.ActualHeight / 2));
+                ball = new Ball(MyCanvas, player, elBall, 10, 10);
+                var response = tcp.Update(Canvas.GetTop(player.thisRacket.element).ToString(), Canvas.GetLeft(player.thisRacket.element).ToString(),
+                    Canvas.GetTop(ball.element).ToString(), Canvas.GetLeft(ball.element).ToString(), ball.dy.ToString(), ball.dx.ToString());
                 Thread.Sleep(2000);
                 gameTimer.Interval = TimeSpan.FromMilliseconds(50);
                 gameTimer.Tick += GameLoop;
@@ -132,8 +152,8 @@ namespace PongOnline
             }
             if (e.Key == Key.Escape)
             {
-                leftRacket.Visibility = Visibility.Collapsed;
-                rightRacket.Visibility = Visibility.Collapsed;
+                elemLeftRacket.Visibility = Visibility.Collapsed;
+                elemRightRacket.Visibility = Visibility.Collapsed;
                 tcp.Cancel();
                 gameTimer.Stop();
             }

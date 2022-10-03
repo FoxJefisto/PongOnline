@@ -14,8 +14,8 @@ namespace PongOnline.Model
         public bool MoveDown { get; set; }
         public bool MoveLeft { get; set; }
         public bool MoveRight { get; set; }
-        public Rectangle thisRacket { get; set; }
-        public Rectangle opponentRacket { get; set; }
+        public Racket thisRacket { get; set; }
+        public Racket opponentRacket { get; set; }
 
 
     }

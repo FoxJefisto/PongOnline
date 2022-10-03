@@ -68,9 +68,9 @@ namespace PongOnline.Connect
             return SendMessage(command);
         }
 
-        public string Update(string CanvasTop, string CanvasLeft)
+        public string Update(string racketTop, string racketLeft, string ballTop, string ballLeft, string balldy, string balldx)
         {
-            var command = $"update {CanvasTop} {CanvasLeft}";
+            var command = $"update {racketTop} {racketLeft} {ballTop} {ballLeft} {balldy} {balldx}";
             return SendMessage(command);
         }
 

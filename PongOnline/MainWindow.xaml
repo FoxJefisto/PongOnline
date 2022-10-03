@@ -14,11 +14,11 @@
         <Canvas x:Name="MyCanvas" Grid.Row="0" Focusable="True"
                 KeyDown="MyCanvas_KeyDown"
                 KeyUp="MyCanvas_KeyUp">
-            <Rectangle x:Name="rightRacket" Width="10" Height="60" Fill="Red" Visibility="Collapsed"
+            <Rectangle x:Name="elemRightRacket" Width="20" Height="80" Fill="Red" Visibility="Collapsed"
                        />
             <Rectangle x:Name="elBall" Width="10" Height="10" Fill="Black" Visibility="Collapsed"
                        />
-            <Rectangle x:Name="leftRacket" Width="10" Height="60" Fill="Blue" Visibility="Collapsed"
+            <Rectangle x:Name="elemLeftRacket" Width="20" Height="80" Fill="Blue" Visibility="Collapsed"
                        />
         </Canvas>
         <Grid Grid.Row="1">
